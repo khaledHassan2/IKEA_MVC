@@ -1,0 +1,120 @@
+﻿using IKEA.BLL.Models.Departments;
+using IKEA.DAL.Models.Departments;
+using IKEA.DAL.Presistance.Repositry.Departments;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IKEA.BLL.Services
+{
+    public class DepartmentService : IDepartmentService
+    {
+        private readonly IDepartmentRepository _departmentRepository;
+
+        public DepartmentService(IDepartmentRepository departmentRepository)
+        {
+            _departmentRepository = departmentRepository;
+        }
+        public IEnumerable<DepartmentToReturnDTO> GetAllDepartments()
+        {
+            var departments = _departmentRepository.GetAllAsQuerable().Select(department => new DepartmentToReturnDTO
+            {
+                // Manull Maping (Auto Mapper)
+                Id = department.Id,
+                Name = department.Name,
+                Code = department.Code,
+                Description = department.Description,
+                CreationDate = department.CreationDate
+            }).AsNoTracking().ToList();
+            return departments;
+            
+            
+        }
+
+        //public IEnumerable<DepartmentToReturnDTO> GetAllDepartments()
+        //{
+        //    var departments = _departmentRepository.GettAll();
+        //    foreach (var department in departments)
+        //    {
+        //        yield return new DepartmentToReturnDTO
+        //        {
+        //            // Manull Maping (Auto Mapper)
+        //            Id = department.Id,
+        //            Name = department.Name,
+        //            Code = department.Code,
+        //            Description = department.Description,
+        //            CreationDate = department.CreationDate
+
+        //        };
+        //    }
+        //}
+
+        public DepartmentDetailsToReturnDTO? GetDepartmentByID(int id)
+        {
+            var department = _departmentRepository.GetById(id);
+            if(department is{ } /* is not null */ )
+            {
+
+            return new DepartmentDetailsToReturnDTO
+            {
+                Id = department.Id,
+                Name = department.Name,
+                Code = department.Code,
+                Description = department.Description,
+                CreationDate = department.CreationDate,
+                CreatedBy=department.CreatedBy,
+                CreatedOn=department.CreatedOn,
+                LastModeficationBy=department.LastModeficationBy,
+                LastModeficationOn=department.LastModeficationOn
+            };
+            }
+            return null;
+        }
+
+        public int CreatDepartment(CreatedDepartmentDTO departmentDTO)
+        {
+            var Creatteddepartment = new Department()
+            {
+                Code = departmentDTO.Code,
+                Name = departmentDTO.Name,
+                Description = departmentDTO.Description,
+                CreationDate = departmentDTO.CreationDate,
+                CreatedBy = 1,
+                LastModeficationBy = 1,
+                LastModeficationOn = DateTime.UtcNow,
+                //CreatedOn=DateTime.UtcNow,
+            };
+            return _departmentRepository.Add(Creatteddepartment);
+        }
+
+
+        public int UpdateDepartment(UpdatedDepartmentDTO departmentDTO)
+        {
+            var updateddepartment = new Department()
+            {
+                Id=departmentDTO.Id,
+                Code = departmentDTO.Code,
+                Name = departmentDTO.Name,
+                Description = departmentDTO.Description,
+                CreationDate = departmentDTO.CreationDate,
+                LastModeficationBy = 1,
+                LastModeficationOn = DateTime.UtcNow,
+                
+            };
+            return _departmentRepository.Update(updateddepartment);
+        }
+        public bool DeleteDepartment(int id)
+        {
+            var department = _departmentRepository.GetById(id);
+            if(department is not null)
+            {
+                return _departmentRepository.Delete(department) > 0;
+            }
+            return false;
+        }
+
+    }
+}

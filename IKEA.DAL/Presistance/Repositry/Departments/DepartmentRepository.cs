@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace IKEA.DAL.Presistance.Repositry.Departments
 {
-    class DepartmentRepository : IDepartmentRepository
+    public class DepartmentRepository : IDepartmentRepository
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -45,6 +45,12 @@ namespace IKEA.DAL.Presistance.Repositry.Departments
         {
             _dbContext.Departments.Remove(entity);
             return _dbContext.SaveChanges();
+
+        }
+
+        public IQueryable<Department> GetAllAsQuerable()
+        {
+            return _dbContext.Departments;
         }
     }
 }
