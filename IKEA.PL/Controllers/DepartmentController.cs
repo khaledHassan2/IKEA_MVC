@@ -1,5 +1,7 @@
 ﻿using IKEA.BLL.Models.Departments;
 using IKEA.BLL.Services;
+using IKEA.DAL.Models.Departments;
+using IKEA.PL.Models.Departments;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IKEA.PL.Controllers
@@ -10,7 +12,7 @@ namespace IKEA.PL.Controllers
         private readonly ILogger<CreatedDepartmentDTO> _logger;
         private readonly IWebHostEnvironment _environment;
 
-        public DepartmentController(IDepartmentService departmentService,ILogger<CreatedDepartmentDTO> logger,IWebHostEnvironment environment
+        public DepartmentController(IDepartmentService departmentService, ILogger<CreatedDepartmentDTO> logger, IWebHostEnvironment environment
             )
         {
             _departmentService = departmentService;
@@ -54,11 +56,11 @@ namespace IKEA.PL.Controllers
                 else
                 {
                     message = "Department Is Not Created";
-                    ModelState.AddModelError(string.Empty,message );
+                    ModelState.AddModelError(string.Empty, message);
                     return View(departmentDTO);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // 1-log Exception
                 _logger.LogError(ex, ex.Message);
@@ -76,6 +78,115 @@ namespace IKEA.PL.Controllers
             }
 
 
+
+        }
+        #endregion
+        #endregion
+        #region Details
+        [HttpGet]
+        public IActionResult Details(int? id)
+        {
+            if (id is null) return BadRequest();
+
+            var department = _departmentService.GetDepartmentByID(id.Value);
+
+            if (department is null) return NotFound();//404
+
+            return View(department);
+        }
+        #endregion
+        #region Edit
+        #region Get
+        [HttpGet]
+        public IActionResult Edit(int? id)
+        {
+            if (id is null) return BadRequest();
+
+            var department = _departmentService.GetDepartmentByID(id.Value);
+
+            if (department is null) return NotFound();//404
+
+            return View(new DepartmentEditViewModel()
+            {
+                Code = department.Code,
+                Name = department.Name,
+                Description = department.Description,
+                CreationDate = department.CreationDate
+            });
+
+        }
+        #endregion
+        #region Post
+        [HttpPost]
+        public IActionResult Edit([FromRoute] int id, DepartmentEditViewModel departmentVM)
+        {
+            var message = string.Empty;
+            if (!ModelState.IsValid) return View(departmentVM);
+            try
+            {
+                var upDepartment = new UpdatedDepartmentDTO()
+                {
+                    Id=id,
+                    Code = departmentVM.Code,
+                    Name = departmentVM.Name,
+                    Description = departmentVM.Description,
+                    CreationDate = departmentVM.CreationDate
+                };
+                var updeted = _departmentService.UpdateDepartment(upDepartment) > 0;
+                if (updeted) 
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                message = "Sorry,An Error ";
+                
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                message = _environment.IsDevelopment()? ex.Message : "Sorry,An Error ";
+            }
+            ModelState.AddModelError(string.Empty, message);
+            return View(departmentVM);
+
+        }
+        #endregion
+        #endregion
+        #region Delete
+        #region Get
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id is null) return BadRequest();
+
+            var department = _departmentService.GetDepartmentByID(id.Value);
+
+            if (department is null) return NotFound();//404
+
+            return View(department);
+        }
+        #endregion
+        #region Post
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            var message = string.Empty;
+            var delete = _departmentService.DeleteDepartment(id);
+            try
+            {
+                if (delete)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                message = "Sorry,An Error ";
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                message = _environment.IsDevelopment() ? ex.Message : "Sorry,An Error ";
+            }
+            ModelState.AddModelError(string.Empty, message);
+            return RedirectToAction(nameof(Index));
 
         }
         #endregion
