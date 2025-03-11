@@ -1,4 +1,4 @@
-﻿using IKEA.DAL.Models.Departments;
+﻿using IKEA.DAL.Models.Employees;
 using IKEA.DAL.Presistance.Repositry._Generic;
 using System;
 using System.Collections.Generic;
@@ -6,10 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IKEA.DAL.Presistance.Repositry.Departments
+namespace IKEA.DAL.Presistance.Repositry.Employees
 {
-    public interface IDepartmentRepository:IGenericRepository<Department>
+   public interface IEmployeeRepository:IGenericRepository<Employee>
     {
-       
     }
 }
