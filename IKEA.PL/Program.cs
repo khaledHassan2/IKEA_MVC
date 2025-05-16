@@ -1,6 +1,8 @@
-using IKEA.BLL.Services;
+using IKEA.BLL.Services.Departments;
+using IKEA.BLL.Services.Employees;
 using IKEA.DAL.Presistance.Data;
 using IKEA.DAL.Presistance.Repositry.Departments;
+using IKEA.DAL.Presistance.Repositry.Employees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -17,10 +19,16 @@ namespace IKEA.PL
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<ApplicationDbContext>((OptionsBuilder) =>
             {
-                OptionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                OptionsBuilder.UseLazyLoadingProxies()
+                .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
 
             #endregion
 

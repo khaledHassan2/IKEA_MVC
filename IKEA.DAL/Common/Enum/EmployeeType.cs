@@ -8,6 +8,7 @@ namespace IKEA.DAL.Common.Enum
 {
    public enum EmployeeType
     {
-        PartTime=1,FullTime=2
+        FullTime=1,
+        PartTime=2
     }
 }

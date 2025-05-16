@@ -1,0 +1,21 @@
+﻿@using IKEA.BLL.Services
+@using IKEA.BLL.Services.Departments
+@using IKEA.DAL.Common.Enum
+@model CreatedEmployeeDto
+@* @inject IDepartmentService departmentService *@
+
+@{
+    ViewData["Title"] = "Employees";
+    ViewBag.Action="Create";
+   
+}
+
+<div class="row justify-content-center align-items-center flex-column">
+    <h1 class="col-6 my-4 text-center">Create New Employee</h1>
+
+    <partial name="Partials/_CreateEditEmployeePartial" />
+</div>
+
+@section ValidationScript{
+    <partial name="_ValidationScriptsPartial" />
+}

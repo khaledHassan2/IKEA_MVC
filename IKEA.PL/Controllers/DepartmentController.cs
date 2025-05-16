@@ -1,5 +1,5 @@
 ﻿using IKEA.BLL.Models.Departments;
-using IKEA.BLL.Services;
+using IKEA.BLL.Services.Departments;
 using IKEA.DAL.Models.Departments;
 using IKEA.PL.Models.Departments;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +24,10 @@ namespace IKEA.PL.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            //1: ViewData = is dictionary type property it helps us transfer the data from conttroler [action] to view
+            ViewData["Message"] = "Hello View Data";
+            //2: ViewBag=> Dynamic type prop it helps us transfer the data from conttroler [action] to view
+            ViewBag.Message = "Hello View Bag";
             var departments = _departmentService.GetAllDepartments();
             return View(departments);
         }
@@ -39,6 +43,7 @@ namespace IKEA.PL.Controllers
         #endregion
         #region Post
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(CreatedDepartmentDTO departmentDTO)
         {
             string message = string.Empty;
@@ -49,12 +54,15 @@ namespace IKEA.PL.Controllers
                     return View(departmentDTO);
                 }
                 var Result = _departmentService.CreatDepartment(departmentDTO);
+                // 3: TempData is prop of type Dictionary obj used for transefring the data between 2 requests
                 if (Result > 0)
                 {
+                    TempData["Message"] = "Department is Created";
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
+                    TempData["Message"] = "Department Is Not Created";
                     message = "Department Is Not Created";
                     ModelState.AddModelError(string.Empty, message);
                     return View(departmentDTO);
@@ -118,6 +126,7 @@ namespace IKEA.PL.Controllers
         #endregion
         #region Post
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit([FromRoute] int id, DepartmentEditViewModel departmentVM)
         {
             var message = string.Empty;
@@ -152,21 +161,9 @@ namespace IKEA.PL.Controllers
         #endregion
         #endregion
         #region Delete
-        #region Get
-        [HttpGet]
-        public IActionResult Delete(int? id)
-        {
-            if (id is null) return BadRequest();
-
-            var department = _departmentService.GetDepartmentByID(id.Value);
-
-            if (department is null) return NotFound();//404
-
-            return View(department);
-        }
-        #endregion
         #region Post
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
             var message = string.Empty;

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IKEA.BLL.Services
+namespace IKEA.BLL.Services.Departments
 {
     public class DepartmentService : IDepartmentService
     {
@@ -20,7 +20,7 @@ namespace IKEA.BLL.Services
         }
         public IEnumerable<DepartmentToReturnDTO> GetAllDepartments()
         {
-            var departments = _departmentRepository.GetAllAsQuerable().Select(department => new DepartmentToReturnDTO
+            var departments = _departmentRepository.GetAllAsQuerable().Where(D=>!D.IsDeleted).Select(department => new DepartmentToReturnDTO
             {
                 // Manull Maping (Auto Mapper)
                 Id = department.Id,
@@ -33,23 +33,6 @@ namespace IKEA.BLL.Services
             
         }
 
-        //public IEnumerable<DepartmentToReturnDTO> GetAllDepartments()
-        //{
-        //    var departments = _departmentRepository.GettAll();
-        //    foreach (var department in departments)
-        //    {
-        //        yield return new DepartmentToReturnDTO
-        //        {
-        //            // Manull Maping (Auto Mapper)
-        //            Id = department.Id,
-        //            Name = department.Name,
-        //            Code = department.Code,
-        //            Description = department.Description,
-        //            CreationDate = department.CreationDate
-
-        //        };
-        //    }
-        //}
 
         public DepartmentDetailsToReturnDTO? GetDepartmentByID(int id)
         {
