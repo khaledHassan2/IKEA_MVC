@@ -1,19 +1,24 @@
-﻿using IKEA.BLL.Models.Employees;
+﻿using IKEA.BLL.Common.Services;
+using IKEA.BLL.Models.Employees;
 using IKEA.DAL.Models.Employees;
 using IKEA.DAL.Presistance.Repositry.Employees;
+using IKEA.DAL.Presistance.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.BLL.Services.Employees
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IUnitOFWork _unitOFWork;
+        private readonly IAttachmentService _attachmentService;
 
-        public EmployeeService(IEmployeeRepository employeeRepository)
+        public EmployeeService(IUnitOFWork unitOFWork,IAttachmentService attachmentService)
         {
-            _employeeRepository = employeeRepository;
+            // Ask Clr Creating obj From Class Implementing UnitOfWork
+            _unitOFWork = unitOFWork;
+            _attachmentService = attachmentService;
         }
-        public int CreateEmployee(CreatedEmployeeDto employeeDto)
+        public async Task< int> CreateEmployeeAsync(CreatedEmployeeDto employeeDto)
         {
             var employee = new IKEA.DAL.Models.Employees.Employee()
             {
@@ -32,11 +37,16 @@ namespace IKEA.BLL.Services.Employees
                 LastModeficationBy = 1,
                 LastModeficationOn = DateTime.UtcNow
             };
-          
-           return _employeeRepository.Add(employee);
+            if (employeeDto.Image is not null)
+            {
+                employee.Image = _attachmentService.UploadFile(employeeDto.Image, "images");
+            }
+
+            _unitOFWork.EmployeeRepository.Add(employee);
+            return await _unitOFWork.CompleteAsync();
             
         }
-        public int UpdateEmployee(UpdatedEmployeeDto employeeDto)
+        public async Task< int> UpdateEmployeeAsync(UpdatedEmployeeDto employeeDto)
         {
             var employee = new Employee()
             {
@@ -57,23 +67,25 @@ namespace IKEA.BLL.Services.Employees
                 LastModeficationOn = DateTime.UtcNow
 
             };
-            return _employeeRepository.Update(employee);
+             _unitOFWork.EmployeeRepository.Update(employee);
+            return await _unitOFWork.CompleteAsync();
         }
 
-        public bool DeleteEmployee(int id)
+        public async Task< bool > DeleteEmployeeAsync(int id)
         {
-            var employee = _employeeRepository.GetById(id);
+            var employee = await _unitOFWork.EmployeeRepository.GetByIdAsync(id);
             if (employee is { })
             {
-                return _employeeRepository.Delete(employee) > 0;
+               _unitOFWork.EmployeeRepository.Delete(employee);
+                return await _unitOFWork.CompleteAsync()>0;
             }
             return false;
         }
 
-        public IEnumerable<EmployeeDto> GetAllEmployees()
+        public async Task< IEnumerable<EmployeeDto>> GetAllEmployeesAsync(string search)
         {
-            return _employeeRepository.GetAllAsQuerable().
-                Where(E=>!E.IsDeleted).
+            return await _unitOFWork.EmployeeRepository.GetAllAsQuerable().
+                Where(E=>!E.IsDeleted&& (string.IsNullOrEmpty(search) || E.Name.ToLower().Contains(search.ToLower()))).
                 Include(e=>e.Department).
                 Select(employee => new EmployeeDto()
             {
@@ -90,14 +102,13 @@ namespace IKEA.BLL.Services.Employees
                 EmployeeType = employee.EmployeeType.ToString(),
                 Department=employee.Department.Name
 
-            });
+            }).ToListAsync();
         }
 
-        public EmployeeDetailsDto? GetEmployeeById(int id)
+        public async Task< EmployeeDetailsDto?> GetEmployeeByIdAsync(int id)
         {
-            var employee = _employeeRepository.GetById(id);
+            var employee = await _unitOFWork.EmployeeRepository.GetByIdAsync(id);
             if (employee is { })
-            {
                 return new EmployeeDetailsDto()
                 {
                     Id = employee.Id,
@@ -109,14 +120,18 @@ namespace IKEA.BLL.Services.Employees
                     Email = employee.Email,
                     PhoneNumber = employee.PhoneNumber,
                     HiringDate = employee.HiringDate,
+                    //--------------------------
                     Gender = employee.Gender,
                     EmployeeType = employee.EmployeeType,
-                    Department=employee.Department.Name
+                    //--------------------------
+                    Department = employee.Department.Name,
+                    Image=employee.Image
+                   
                 };
-            }
+            return null;
+        }
 
-                return null;
         }
 
     }
-}
+

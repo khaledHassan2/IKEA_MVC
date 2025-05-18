@@ -19,33 +19,32 @@ namespace IKEA.DAL.Presistance.Repositry._Generic
             _dbContext = dbContext;
         }
 
-        public IEnumerable<T> GettAll(bool WithAsNoTraking = true)
+        public async Task< IEnumerable<T>> GettAllAsync(bool WithAsNoTraking = true)
         {
             if (WithAsNoTraking)
             {
-                _dbContext.Set<T>().Where(x=>!x.IsDeleted).AsNoTracking().ToList();
+               return await _dbContext.Set<T>().Where(x=>!x.IsDeleted).AsNoTracking().ToListAsync();
             }
-            return _dbContext.Set<T>().Where(x => !x.IsDeleted).ToList();
+            return await _dbContext.Set<T>().Where(x => !x.IsDeleted).ToListAsync();
         }
-        public T? GetById(int id)
+        public async  Task< T?> GetByIdAsync(int id)
         {
-            return _dbContext.Set<T>().Find(id);
+            return await _dbContext.Set<T>().FindAsync(id);
         }
-        public int Add(T entity)
+        public void Add(T entity)
         {
             _dbContext.Set<T>().Add(entity);
-            return _dbContext.SaveChanges();
+          
         }
-        public int Update(T entity)
+        public void Update(T entity)
         {
             _dbContext.Set<T>().Update(entity);
-            return _dbContext.SaveChanges();
+           
         }
-        public int Delete(T entity)
+        public void Delete(T entity)
         {
             entity.IsDeleted = true;
             _dbContext.Set<T>().Update(entity);
-            return _dbContext.SaveChanges();
 
         }
 

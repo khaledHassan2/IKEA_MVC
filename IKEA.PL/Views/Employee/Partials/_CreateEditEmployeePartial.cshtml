@@ -3,11 +3,11 @@
 @model CreatedEmployeeDto
 @inject IDepartmentService departmentService
 @{
-    var Departments = new SelectList(departmentService.GetAllDepartments(),
+    var Departments = new SelectList(await departmentService.GetAllDepartmentsAsync(),
                     nameof(DepartmentDetailsToReturnDTO.Id),
                     nameof(DepartmentDetailsToReturnDTO.Name));
 }
-<form  asp-action="@ViewBag.Action" method="post" class="row col-6">
+<form  asp-action="@ViewBag.Action" method="post" class="row col-6" enctype="multipart/form-data">
 
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -79,6 +79,11 @@
         <label asp-for="HiringDate" class="form-label"></label>
         <input asp-for="HiringDate" type="date" class="form-control mb-2" />
         <span asp-validation-for="HiringDate" class="text-danger"></span>
+    </div>
+    <div class="form-group col-6">
+        <label asp-for="Image" class="form-label"></label>
+        <input asp-for="Image" class="form-control mb-2" />
+        
     </div>
 
     <div class="form-group col-12 my-2">

@@ -10,11 +10,11 @@ namespace IKEA.DAL.Presistance.Repositry._Generic
 {
    public interface IGenericRepository<T> where T:ModelBase
     {
-        IEnumerable<T> GettAll(bool WithAsNoTraking = true);
+      Task<IEnumerable<T>> GettAllAsync(bool WithAsNoTraking = true);
         IQueryable<T> GetAllAsQuerable();
-        T? GetById(int id);
-        int Add(T entity);
-        int Update(T entity);
-        int Delete(T entity);
+       Task< T?> GetByIdAsync(int id);
+        void Add(T entity);
+        void Update(T entity);
+        void Delete(T entity);
     }
 }

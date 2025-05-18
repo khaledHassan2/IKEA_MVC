@@ -29,6 +29,7 @@ namespace IKEA.DAL.Models.Employees
         // one
         public virtual Department? Department { get; set; }
         #endregion
+        public string? Image { get; set; }
 
     }
 }

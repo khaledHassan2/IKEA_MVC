@@ -1,4 +1,5 @@
 ﻿using IKEA.DAL.Common.Enum;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -47,5 +48,7 @@ namespace IKEA.BLL.Models.Employees
         public EmployeeType EmployeeType { get; set; }
         [Display (Name ="Department")]
         public int? DepartmentId { get; set; }
+        public IFormFile? Image { get; set; }
+
     }
 }
