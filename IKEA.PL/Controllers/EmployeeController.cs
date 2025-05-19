@@ -5,12 +5,14 @@ using IKEA.BLL.Services.Departments;
 using IKEA.BLL.Services.Employees;
 using IKEA.DAL.Models.Employees;
 using IKEA.PL.Models.Departments;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace IKEA.PL.Controllers
 {
+    [Authorize]
     public class EmployeeController : Controller
     {
         #region Services

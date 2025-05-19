@@ -3,10 +3,12 @@ using IKEA.BLL.Models.Departments;
 using IKEA.BLL.Services.Departments;
 using IKEA.DAL.Models.Departments;
 using IKEA.PL.Models.Departments;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IKEA.PL.Controllers
 {
+    [Authorize]
     public class DepartmentController : Controller
     {
         private readonly IDepartmentService _departmentService;

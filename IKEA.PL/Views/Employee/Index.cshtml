@@ -1,59 +1,54 @@
-﻿
-@model IEnumerable<EmployeeDto>
+﻿@model IEnumerable<EmployeeDto>
 @{
     ViewData["Title"] = "Employees";
-
 }
 
-<h1>All Employees</h1>
-
-<br />
-<a asp-controller="Employee" asp-action="Create"  class="btn btn-primary">Create New Employee</a>
-<br />
-<form asp-action="Index" method="get" class="mt-5 row justify-content-center align-items-center">
-    <div class="row col-8 offset-1">
-        <div class="col-8">
-            <input type="text" name="search" class="form-control" id="searchInp" placeholder="Search By Name" />
-        </div>
-        <div class="col-4">
-            <input type="submit" value="Search" class="btn btn-success" />
-        </div>
-    </div>
-</form>
-<br />
-@if (Model.Count() > 0)
-{
-    <table class="mt-5 table table-striped table-hover">
-        <thead class="text-center">
-            <tr>
-                <th>@Html.DisplayNameFor(X => X.Name)</th>
-                <th>@Html.DisplayNameFor(X => X.Email)</th>
-                <th>@Html.DisplayNameFor(X => X.Department)</th>
-                <th>@Html.DisplayNameFor(X => X.EmployeeType)</th>
-                <th>@Html.DisplayNameFor(X => X.Age)</th>
-                <th>@Html.DisplayNameFor(X => X.Salary)</th>
-                <th>@Html.DisplayNameFor(X => X.IsActive)</th>
-                <th>@Html.DisplayNameFor(X => X.Gender)</th>
-                <th>Details</th>
-                <th>Update</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody class="text-center">
-            <partial name="Partials/_EmployeeListePartial" />
-        </tbody>
-
-    </table>
-
-}
-else
-{
-    <div class="alert alert-info mt-3">
-        <h3> Sorry There Is No Employees :(</h3>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">Employees</h2>
+        <a asp-controller="Employee" asp-action="Create" class="btn btn-success shadow-sm">
+            <i class="fas fa-plus me-1"></i> Create New
+        </a>
     </div>
 
-}
+    <form asp-action="Index" method="get" class="row g-3 mb-4 align-items-center justify-content-center">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" id="searchInp" placeholder="🔍 Search by name..." />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="fas fa-search me-1"></i> Search
+            </button>
+        </div>
+    </form>
 
-
-
-
+    @if (Model.Any())
+    {
+        <div class="table-responsive rounded shadow-sm">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>@Html.DisplayNameFor(x => x.Name)</th>
+                        <th>@Html.DisplayNameFor(x => x.Email)</th>
+                        <th>@Html.DisplayNameFor(x => x.Department)</th>
+                        <th>@Html.DisplayNameFor(x => x.EmployeeType)</th>
+                        <th>@Html.DisplayNameFor(x => x.Age)</th>
+                        <th>@Html.DisplayNameFor(x => x.Salary)</th>
+                        <th>@Html.DisplayNameFor(x => x.IsActive)</th>
+                        <th>@Html.DisplayNameFor(x => x.Gender)</th>
+                        <th colspan="3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <partial name="Partials/_EmployeeListePartial" />
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center p-4 shadow-sm">
+            <h4 class="mb-0">No employees found 🙁</h4>
+        </div>
+    }
+</div>
